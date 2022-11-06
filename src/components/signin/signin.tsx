@@ -11,19 +11,15 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useAxios from 'axios-hooks';
-import CustomSnackbar from '../snackbar/snackbar';
-import { AlertColor } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BearerAccessRefreshToken } from '../../models/authentication';
+import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
-  const [snackBarSeverity, setSnackBarSeverity] = useState<AlertColor>('success');
-  const [snackBarMessage, setSnackBarMessage] = useState<string>('');
+  const { open, severity, message, openSnackBar } = useSnackBar();
 
   const [{ data: token, loading: tokenLoading, error: tokenError }, verifyUser] = useAxios(
     {
@@ -47,18 +43,19 @@ const SignIn = () => {
   useEffect(() => {
     if (token) {
       const loggedInToken: BearerAccessRefreshToken = token;
-      setSnackBarOpen(true);
-      setSnackBarMessage('Successfully signed in');
+      openSnackBar('success', 'Signed In Success');
       localStorage.setItem('BearerAccessRefreshToken', JSON.stringify(loggedInToken));
       console.log(loggedInToken);
-      navigate('/dashboard');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 6000);
     }
   }, [token]);
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <CustomSnackbar open={snackBarOpen} setOpen={setSnackBarOpen} severity={snackBarSeverity} message={snackBarMessage} />
+      <CustomSnackBar open={open} severity={'success'} message={message}  />
       <Box
         sx={{
           marginTop: 8,

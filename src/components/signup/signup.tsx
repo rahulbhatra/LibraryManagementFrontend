@@ -11,24 +11,19 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import useAxios from 'axios-hooks';
 import { useEffect, useState } from 'react';
-import CustomSnackbar from '../snackbar/snackbar';
 import { AlertColor } from '@mui/material';
+import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
 
 const theme = createTheme();
 
 const SignUp = () => {
-  const [{data, loading, error}] = useAxios(
-    'http://localhost:8080/user'
-  );
-  const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
-  const [snackBarSeverity, setSnackBarSeverity] = useState<AlertColor>('success');
-
+  const {open, severity, message, openSnackBar} = useSnackBar();
   const [{data: user, loading: userLoading, error: userError}, insertUser] = useAxios(
     {
-      url: 'http://localhost:8080/user',
+      url: 'http://localhost:8080/sign-up',
       method: 'POST',
     },
     { manual: true }
@@ -36,7 +31,7 @@ const SignUp = () => {
 
   useEffect(() => {
     if (userError) {
-      
+      openSnackBar('error', 'Error while creating user');
     }
   }, [userError]);
 
@@ -60,7 +55,7 @@ const SignUp = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <CustomSnackbar open={snackBarOpen} setOpen={setSnackBarOpen} severity={snackBarSeverity} message={''} />
+      <CustomSnackBar open={open} severity={severity} message={message} />
       <CssBaseline />
       <Box
         sx={{
