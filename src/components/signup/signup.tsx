@@ -13,7 +13,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useAxios from 'axios-hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import CustomSnackbar from '../snackbar/snackbar';
+import { AlertColor } from '@mui/material';
 
 const theme = createTheme();
 
@@ -21,6 +23,8 @@ const SignUp = () => {
   const [{data, loading, error}] = useAxios(
     'http://localhost:8080/user'
   );
+  const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
+  const [snackBarSeverity, setSnackBarSeverity] = useState<AlertColor>('success');
 
   const [{data: user, loading: userLoading, error: userError}, insertUser] = useAxios(
     {
@@ -31,8 +35,10 @@ const SignUp = () => {
   );
 
   useEffect(() => {
-    console.log(data);
-  }, data);
+    if (userError) {
+      
+    }
+  }, [userError]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,7 +49,7 @@ const SignUp = () => {
     });
     insertUser({
       data: {
-        emailId: data.get('email'),
+        username: data.get('email'),
         password: data.get('password'),
         firstName: data.get('firstName'),
         lastName: data.get('lastName')
@@ -54,6 +60,7 @@ const SignUp = () => {
 
   return (
     <Container component="main" maxWidth="xs">
+      <CustomSnackbar open={snackBarOpen} setOpen={setSnackBarOpen} severity={snackBarSeverity} message={''} />
       <CssBaseline />
       <Box
         sx={{
@@ -115,6 +122,7 @@ const SignUp = () => {
             </Grid>
           </Grid>
           <Button
+            disabled={userLoading}
             type="submit"
             fullWidth
             variant="contained"

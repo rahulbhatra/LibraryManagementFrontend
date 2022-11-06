@@ -15,26 +15,27 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useAxios from 'axios-hooks';
 import CustomSnackbar from '../snackbar/snackbar';
 import { AlertColor } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BearerAccessRefreshToken } from '../../models/authentication';
 
 const SignIn = () => {
-  const [start, setStart] = useState<boolean>(false);
-  const [severity, setSeverity] = useState<AlertColor>('success');
-  const [{ data: isUser, loading: verifyLoading, error: verifyError }, verifyUser] = useAxios(
+  const navigate = useNavigate();
+  const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
+  const [snackBarSeverity, setSnackBarSeverity] = useState<AlertColor>('success');
+  const [snackBarMessage, setSnackBarMessage] = useState<string>('');
+
+  const [{ data: token, loading: tokenLoading, error: tokenError }, verifyUser] = useAxios(
     {
       method: 'POST',
-      url: 'http://localhost:8080/user/verifyUser'
+      url: 'http://localhost:8080/login'
     },
     { manual: true }
   );
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      username: data.get('email'),
-      password: data.get('password'),
-    });
     verifyUser({
       data: {
         username: data.get('email'),
@@ -43,10 +44,21 @@ const SignIn = () => {
     });
   };
 
+  useEffect(() => {
+    if (token) {
+      const loggedInToken: BearerAccessRefreshToken = token;
+      setSnackBarOpen(true);
+      setSnackBarMessage('Successfully signed in');
+      localStorage.setItem('BearerAccessRefreshToken', JSON.stringify(loggedInToken));
+      console.log(loggedInToken);
+      navigate('/dashboard');
+    }
+  }, [token]);
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <CustomSnackbar start={false} severity={severity} message={''} />
+      <CustomSnackbar open={snackBarOpen} setOpen={setSnackBarOpen} severity={snackBarSeverity} message={snackBarMessage} />
       <Box
         sx={{
           marginTop: 8,
@@ -101,7 +113,7 @@ const SignIn = () => {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/sign-up" variant="body2">
                 {'Don\'t have an account? Sign Up'}
               </Link>
             </Grid>

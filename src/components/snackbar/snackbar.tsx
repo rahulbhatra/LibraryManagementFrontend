@@ -2,13 +2,13 @@ import { Alert, AlertColor, Snackbar } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 interface Props {
-  start: boolean;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   severity: AlertColor;
   message: string;
 }
 
-const CustomSnackbar = ({ start, severity, message } : Props) => {
-  const [open, setOpen] = useState<boolean>(start);
+const CustomSnackbar = ({ open, setOpen, severity, message } : Props) => {
   return (
     <Snackbar open={open} autoHideDuration={6000} 
       onClose={(event?: React.SyntheticEvent | Event, reason?: string) => {
