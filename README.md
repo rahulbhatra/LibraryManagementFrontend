@@ -1,6 +1,8 @@
-# Getting Started with Create React App
+# Library Management
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Packages
+
+1. npm install axios axios-hooks // uninstall if not required in future
 
 ## Available Scripts
 
