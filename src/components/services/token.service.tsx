@@ -29,8 +29,8 @@ const setBearerAccessRefreshToken = (bearerAccessRefreshToken: BearerAccessRefre
   localStorage.setItem('BearerAccessRefreshToken', JSON.stringify(bearerAccessRefreshToken));
 };
 
-const removeUser = () => {
-  localStorage.removeItem('user');
+const removeBearerAccessRefreshToken = () => {
+  localStorage.removeItem('BearerAccessRefreshToken');
 };
 
 const TokenService = {
@@ -39,7 +39,7 @@ const TokenService = {
   updateLocalAccessToken,
   getBearerAccessRefreshToken,
   setBearerAccessRefreshToken,
-  removeUser,
+  removeBearerAccessRefreshToken,
 };
 
 export default TokenService;

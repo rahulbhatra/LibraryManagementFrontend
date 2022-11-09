@@ -1,24 +1,18 @@
 import * as React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems, secondaryListItems } from './listitem';
-import { Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Avatar, Menu, MenuItem, Tooltip, IconButton, Container, Grid, Paper, Drawer as MuiDrawer } from '@mui/material';
+import { AccountCircle, Logout, Menu as MenuIcon } from '@mui/icons-material';
+import TokenService from '../services/token.service';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth: number = 240;
 
@@ -73,12 +67,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 function DashboardContent() {
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
   const [open, setOpen] = React.useState(true);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  const navigate = useNavigate();
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -140,11 +134,33 @@ function DashboardContent() {
                 open={Boolean(anchorElUser)}
                 onClose={() => setAnchorElUser(null)}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => setAnchorElUser(null)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem onClick={() => {}}>
+                  <IconButton
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="primary-search-account-menu"
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                  <p>Profile</p>
+                </MenuItem>
+                <MenuItem onClick={() => {
+                  TokenService.removeBearerAccessRefreshToken();
+                  navigate('/sign-in');
+                }}>
+                  <IconButton
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="primary-search-account-menu"
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <Logout />
+                  </IconButton>
+                  <p>Logout</p>
+                </MenuItem>
               </Menu>
             </Box>
           </Toolbar>
