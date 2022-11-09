@@ -41,6 +41,12 @@ const SignIn = () => {
   };
 
   useEffect(() => {
+    if (tokenError) {
+      openSnackBar('error', 'Wrong username or password');
+    }
+  }, [tokenError]);
+
+  useEffect(() => {
     if (token) {
       const loggedInToken: BearerAccessRefreshToken = token;
       openSnackBar('success', 'Signed In Success');
@@ -48,14 +54,14 @@ const SignIn = () => {
       console.log(loggedInToken);
       setTimeout(() => {
         navigate('/dashboard');
-      }, 6000);
+      }, 3000);
     }
   }, [token]);
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <CustomSnackBar open={open} severity={'success'} message={message}  />
+      <CustomSnackBar open={open} severity={severity} message={message}  />
       <Box
         sx={{
           marginTop: 8,
