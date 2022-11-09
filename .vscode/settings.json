@@ -2,10 +2,7 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
-<<<<<<< HEAD
     "editor.tabSize": 2,
-=======
->>>>>>> 8a0fa49 (initial setup)
     "eslint.validate": [
         "javascript",
         "javascriptreact",
@@ -18,7 +15,6 @@
     "eslint.workingDirectories": [
         "./",
     ],
-<<<<<<< HEAD
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -32,6 +28,4 @@
         "**/.factorypath": true,
         "**/node_modules": true
     },
-=======
->>>>>>> 8a0fa49 (initial setup)
 }
