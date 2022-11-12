@@ -14,7 +14,6 @@ const CapitalFirstLetter = (string: string) => {
 };
 
 const CustomTable = <T extends Object>({rows, columns} : Props<T>) => {
-  console.log(rows);
   const theme = useTheme();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -51,7 +50,7 @@ const CustomTable = <T extends Object>({rows, columns} : Props<T>) => {
                   return (
                     <>
                       {
-                        <TableCell width={150}>{ row[column] }</TableCell>
+                        <TableCell width={150}>{row[column]}</TableCell>
                       }
                     </>
                   );

@@ -2,16 +2,16 @@ import { Box, Button, FormControlLabel, Grid, IconButton, Link, TextField } from
 import useAxios from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import { Librarian } from '../../models/librarian';
-import { User, UserKeys } from '../../models/user';
+import { User } from '../../models/user';
 import AddIcon from '@mui/icons-material/Add';
-import TableRowsIcon from '@mui/icons-material/TableRows';
 import TokenService from '../services/token.service';
 import CustomTable from '../table/table';
+import CustomModal from '../modal/modal';
 
 export type Operation = 'Add' | 'Table';
 
-const UserHome = () => {
-  const [operation, setOperation] = useState<Operation>();
+const LibrarianHome = () => {
+  const [open, setOpen] = useState<boolean>(false);
   const columns: string[] = ['id', 'firstName', 'lastName',
     'phoneNumber', 'dob', 'age', 'address1', 'address2',
     'city', 'state', 'zipCode', 'username'];
@@ -19,7 +19,10 @@ const UserHome = () => {
   const [{ data: librarians, loading: librariansLoading, error: librariansError}, getAllLibrarians] = useAxios(
     {
       url: 'http://localhost:8080/librarian/getAllLibrarians',
-      method: 'GET'
+      method: 'GET',
+      headers: {
+        'Authorization': TokenService.getAuthorization()
+      }
     },
     {
       manual: true,
@@ -27,10 +30,8 @@ const UserHome = () => {
   );
 
   useEffect(() => {
-    if (operation == 'Table') {
-      getAllLibrarians();
-    }
-  }, [operation, getAllLibrarians]);
+    getAllLibrarians();
+  }, [getAllLibrarians]);
 
   useEffect(() => {
     if (librarians) {
@@ -55,20 +56,17 @@ const UserHome = () => {
         justifyContent="flex-start"
         alignItems="center"
       >
-        <IconButton onClick={() => {setOperation('Table');}} >
-          <TableRowsIcon />
-        </IconButton>
-        <IconButton onClick={() => {setOperation('Add');}} >
+        <IconButton onClick={() => {setOpen(true);}} >
           <AddIcon />
         </IconButton>
       </Grid>
-      {operation === 'Table' && <CustomTable rows={users} columns={columns} />}
-      {operation === 'Add' && <AddLibrarian />}
+      <CustomTable rows={users} columns={columns} />
+      <CustomModal open={open} setOpen={setOpen} children={<AddLibrarian />} />
     </Grid>
   );
 };
 
-export default UserHome;
+export default LibrarianHome;
 
 const AddLibrarian = () => {
   const [{ data: librarian, loading: loading, error: error }, postLibrarian ] = useAxios(
@@ -101,8 +99,14 @@ const AddLibrarian = () => {
   }, [user]);
 
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-      <Grid container spacing={2} width={'80vh'}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="center"
+        rowSpacing={2} columnSpacing={2}
+      >
         <Grid item xs={4} sm={4}>
           <TextField
             required
@@ -198,7 +202,76 @@ const AddLibrarian = () => {
             }}
           />
         </Grid>
-        <Grid xs={12}>
+        <Grid item xs={12}>
+          <TextField
+            required
+            fullWidth
+            name="address1"
+            label="address 1"
+            id="address1"
+            autoComplete="address 1"
+            value={user.address1}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+              setUser((oldUser) => {
+                return {
+                  ...oldUser,
+                  address1: event.target.value
+                };
+              });
+            }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            name="address2"
+            label="address 2"
+            id="address2"
+            autoComplete="address 2"
+            value={user.address2}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+              setUser((oldUser) => {
+                return {
+                  ...oldUser,
+                  address2: event.target.value
+                };
+              });
+            }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            fullWidth
+            name="dob"
+            label="date of birth"
+            id="dob"
+            autoComplete="date of birth"
+            defaultValue="1997-10-25"
+            type="date"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+              setUser((oldUser) => {
+                return {
+                  ...oldUser,
+                  dob: new Date(event.target.value).toISOString()
+                };
+              });
+            }}
+          />
+        </Grid>
+        <Grid container 
+          direction="row"
+          justifyContent="center"
+          alignItems="center"xs={12}>
           <Button
             type="submit"
             variant="contained"

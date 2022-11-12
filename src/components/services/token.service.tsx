@@ -34,6 +34,10 @@ const removeBearerAccessRefreshToken = () => {
   localStorage.removeItem('BearerAccessRefreshToken');
 };
 
+const getAuthorization = () => {
+  return 'Bearer ' + getLocalAccessToken();
+};
+
 const TokenService = {
   getLocalRefreshToken,
   getLocalAccessToken,
@@ -41,6 +45,7 @@ const TokenService = {
   getBearerAccessRefreshToken,
   setBearerAccessRefreshToken,
   removeBearerAccessRefreshToken,
+  getAuthorization
 };
 
 export default TokenService;
