@@ -1,21 +1,22 @@
 import { BearerAccessRefreshToken } from '../../models/authentication';
 
-const getLocalRefreshToken = (): BearerAccessRefreshToken => {
+const getLocalRefreshToken = (): string => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
-  const bearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
-  return bearerAccessRefreshToken?.refreshToken;
+  const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
+  console.log(bearerAccessRefreshToken);
+  return bearerAccessRefreshToken?.refresh_token;
 };
 
-const getLocalAccessToken = (): BearerAccessRefreshToken => {
+const getLocalAccessToken = (): string => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
-  const bearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
-  return bearerAccessRefreshToken?.accessToken;
+  const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
+  return bearerAccessRefreshToken?.access_token;
 };
 
 const updateLocalAccessToken = (token: string) => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
   let bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
-  bearerAccessRefreshToken.accessToken = token;
+  bearerAccessRefreshToken.refresh_token = token;
   localStorage.setItem('bearerAccessRefreshToken', JSON.stringify(bearerAccessRefreshToken));
 };
 

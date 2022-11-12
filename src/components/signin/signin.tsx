@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BearerAccessRefreshToken } from '../../models/authentication';
 import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
+import TokenService from '../services/token.service';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -51,10 +52,14 @@ const SignIn = () => {
       const loggedInToken: BearerAccessRefreshToken = token;
       openSnackBar('success', 'Signed In Success');
       localStorage.setItem('BearerAccessRefreshToken', JSON.stringify(loggedInToken));
+      TokenService.setBearerAccessRefreshToken(loggedInToken);
       console.log(loggedInToken);
       setTimeout(() => {
         navigate('/dashboard');
       }, 3000);
+    }
+    if (token === false) {
+      TokenService.removeBearerAccessRefreshToken();
     }
   }, [token]);
 
