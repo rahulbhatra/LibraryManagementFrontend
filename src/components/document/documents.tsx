@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, CircularProgress, FormControlLabel, Grid, IconButton, Link, MenuItem, Select, Snackbar, TextField } from '@mui/material';
+import { Autocomplete, AutocompleteRenderInputParams, Box, Button, CircularProgress, FormControlLabel, Grid, IconButton, Link, MenuItem, Select, Snackbar, TextField } from '@mui/material';
 import useAxios, { RefetchFunction } from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import { Librarian } from '../../models/librarian';
@@ -10,6 +10,7 @@ import CustomModal from '../modal/modal';
 import Progress from '../progress/progress.component';
 import { Edit, PersonPinCircle } from '@mui/icons-material';
 import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
+import { Document, TypeOfDocument } from '../../models/document';
 
 export type Operation = 'Add' | 'Edit';
 
@@ -40,7 +41,7 @@ const Documents = () => {
   useEffect(() => {
     if (librarians) {
       const users = librarians.map((librarian: Librarian) => {
-        return librarian.librarianInfo;
+        return librarian.user;
       });
       setUsers(users);
     }
@@ -87,12 +88,12 @@ interface AddProps {
 
 const AddDocument = ({ librarian, operation, getAllDocuments, setOpen }: AddProps) => {
   const { open, severity, message, openSnackBar } = useSnackBar();
-  const [{ data: __, loading: loading, error: error }, postLibrarian ] = useAxios(
+  const [{ data: __, loading: loading, error: error }, postDocument ] = useAxios(
     {
       method: 'POST',
-      url: 'http://localhost:8080/librarian',
+      url: 'http://localhost:8080/document',
       headers: {
-        'Authorization': 'Bearer ' + TokenService.getLocalRefreshToken()
+        'Authorization': 'Bearer ' + TokenService.getLocalAccessToken()
       }
     },
     { 
@@ -100,12 +101,12 @@ const AddDocument = ({ librarian, operation, getAllDocuments, setOpen }: AddProp
     }
   );
 
-  const [{ data: _, loading: updatedLoading, error: updatedError }, putLibrarian ] = useAxios(
+  const [{ data: _, loading: updatedLoading, error: updatedError }, putBook ] = useAxios(
     {
       method: 'PUT',
       url: 'http://localhost:8080/librarian',
       headers: {
-        'Authorization': 'Bearer ' + TokenService.getLocalRefreshToken()
+        'Authorization': 'Bearer ' + TokenService.getLocalAccessToken()
       }
     },
     { 
@@ -113,27 +114,26 @@ const AddDocument = ({ librarian, operation, getAllDocuments, setOpen }: AddProp
     }
   );
 
-  const [user, setUser] = useState<User>(librarian? librarian.librarianInfo : {});
+  const [document, setDocument] = useState<Document>({
+    documentType: 'BOOK'
+  });
 
-  useEffect(() => {
-    if (librarian) {
-      setUser(librarian.librarianInfo);
-    }
-  }, [librarian]);
+  // useEffect(() => {
+  //   if (librarian) {
+  //     setUser(librarian.user);
+  //   }
+  // }, [librarian]);
 
   const handleAdd = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data: Librarian = {
-      id: librarian?.id,
-      librarianInfo: user
-    };
+    const data: Document = document;
     if (operation === 'Add') {
-      await postLibrarian({
+      await postDocument({
         data
       });
       openSnackBar('success', 'Successfully created librarian');
     } else {
-      await putLibrarian({
+      await putBook({
         data
       });
       openSnackBar('success', 'Successfully updated librarian');
@@ -143,8 +143,8 @@ const AddDocument = ({ librarian, operation, getAllDocuments, setOpen }: AddProp
   };
 
   useEffect(() => {
-    console.log(user);
-  }, [user]);
+    console.log(document);
+  }, [document]);
 
   return (
     <Box component="form" onSubmit={handleAdd} sx={{ mt: 1 }}>
@@ -156,7 +156,23 @@ const AddDocument = ({ librarian, operation, getAllDocuments, setOpen }: AddProp
         alignItems="center"
         rowSpacing={2} columnSpacing={2}
       >
-        <Grid item xs={4} sm={4}>
+        <Grid item xs={12} sm={12}>
+          <Autocomplete
+            value={document.documentType}
+            onChange={(event, value, reason) => {
+              console.log(value);
+              setDocument((oldDocument) => {
+                return {
+                  ... oldDocument,
+                  documentType: value as TypeOfDocument,
+                };
+              });
+            }}
+            options={['BOOK', 'MAGAZINE', 'JOURNAL_ARTICLE', 'THESIS','REPORT']} 
+            renderInput={(params) => <TextField {...params} label="User Type" />}
+          />
+        </Grid>
+        {/* <Grid item xs={12}>
           <TextField
             required
             fullWidth
@@ -317,7 +333,7 @@ const AddDocument = ({ librarian, operation, getAllDocuments, setOpen }: AddProp
               });
             }}
           />
-        </Grid>
+        </Grid> */}
         <Grid container 
           direction="row"
           justifyContent="center"
@@ -358,10 +374,10 @@ const EditLibrarian = ({librarians, getAllDocuments, setOpen}: EditProps) => {
           setLibrarian(value);
         }}
         getOptionLabel={(option: Librarian) => {
-          const userOption: User = option.librarianInfo;
+          const userOption: User = option.user;
           return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
         }}
-        renderInput={(params) => <TextField {...params} label="Choose User" />}/>
+        renderInput={(params) => <TextField {...params} label="Choose User" />} />
       {librarian && <AddDocument librarian={librarian} operation={'Edit'} getAllDocuments={getAllDocuments} setOpen={setOpen} />}
     </>
   );

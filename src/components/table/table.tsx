@@ -34,7 +34,7 @@ const CustomTable = <T extends Object>({rows, columns} : Props<T>) => {
           <TableHead>
             <TableRow>
               {columns.map((column: string) => 
-                <TableCell id={column} width={150}>{CapitalFirstLetter(column)}</TableCell>
+                <TableCell key={column} id={column} width={150}>{CapitalFirstLetter(column)}</TableCell>
               )}
             </TableRow>
           </TableHead>

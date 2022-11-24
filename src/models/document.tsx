@@ -2,20 +2,18 @@ import { Librarian } from './librarian';
 import { Publisher } from './publisher';
 
 export interface Document {
-  id: number;
-  hierarchicalClassification: string;
-  createdBy: Librarian;
-  createdDate: string;
-  updatedBy: Librarian;
-  updatedDate: string;
-  deletedBy: Librarian;
-  deletedDate: string;
-  documentType: DocumentType;
+  id?: number;
+  hierarchicalClassification?: string;
+  createdBy?: Librarian;
+  createdDate?: string;
+  updatedBy?: Librarian;
+  updatedDate?: string;
+  deletedBy?: Librarian;
+  deletedDate?: string;
+  documentType?: TypeOfDocument;
 };
 
-export interface DocumentType {
-  documentType: 'BOOK' | 'MAGAZINE' | 'JOURNAL_ARTICLE' | 'THESIS' |  'REPORT';
-};
+export type TypeOfDocument = 'BOOK' | 'MAGAZINE' | 'JOURNAL_ARTICLE' | 'THESIS' |'REPORT';
 
 export interface Book {
     id: number;

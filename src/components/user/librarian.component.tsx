@@ -42,7 +42,7 @@ const LibrarianHome = () => {
   useEffect(() => {
     if (librarians) {
       const users = librarians.map((librarian: Librarian) => {
-        return librarian.librarianInfo;
+        return librarian.user;
       });
       setUsers(users);
     }
@@ -115,11 +115,11 @@ const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddPr
     }
   );
 
-  const [user, setUser] = useState<User>(librarian? librarian.librarianInfo : {});
+  const [user, setUser] = useState<User>(librarian? librarian.user : {});
 
   useEffect(() => {
     if (librarian) {
-      setUser(librarian.librarianInfo);
+      setUser(librarian.user);
     }
   }, [librarian]);
 
@@ -127,7 +127,7 @@ const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddPr
     event.preventDefault();
     const data: Librarian = {
       id: librarian?.id,
-      librarianInfo: user
+      user: user
     };
     if (operation === 'Add') {
       await postLibrarian({
@@ -360,7 +360,7 @@ const EditLibrarian = ({librarians, getAllLibrarians, setOpen}: EditProps) => {
           setLibrarian(value);
         }}
         getOptionLabel={(option: Librarian) => {
-          const userOption: User = option.librarianInfo;
+          const userOption: User = option.user;
           return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
         }}
         renderInput={(params) => <TextField {...params} label="Choose User" />}/>
