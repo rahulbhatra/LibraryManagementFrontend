@@ -3,7 +3,7 @@ import { BearerAccessRefreshToken } from '../../models/authentication';
 const getLocalRefreshToken = (): string => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
   const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
-  console.log(bearerAccessRefreshToken);
+  // console.log(bearerAccessRefreshToken);
   return bearerAccessRefreshToken?.refresh_token;
 };
 
@@ -26,7 +26,7 @@ const getBearerAccessRefreshToken = (): BearerAccessRefreshToken => {
 };
 
 const setBearerAccessRefreshToken = (bearerAccessRefreshToken: BearerAccessRefreshToken) => {
-  console.log(JSON.stringify(bearerAccessRefreshToken));
+  // console.log(JSON.stringify(bearerAccessRefreshToken));
   localStorage.setItem('BearerAccessRefreshToken', JSON.stringify(bearerAccessRefreshToken));
 };
 

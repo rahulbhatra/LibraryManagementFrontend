@@ -50,7 +50,8 @@ const CustomTable = <T extends Object>({rows, columns} : Props<T>) => {
                   return (
                     <>
                       {
-                        <TableCell width={150}>{row[column]}</TableCell>
+                        <TableCell width={150}>{
+                          row[column]}</TableCell>
                       }
                     </>
                   );

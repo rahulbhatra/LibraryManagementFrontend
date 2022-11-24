@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const CustomSnackBar = ({open, severity, message} : Props) => {
-  console.log(open, severity, message);
+  // console.log(open, severity, message);
   return (
     <Snackbar open={open} autoHideDuration={6000}>
       <Alert severity={severity} sx={{ width: '100%' }}>
@@ -38,7 +38,7 @@ const useSnackBar = () => {
     setOpen(true);
   };
 
-  return { open, severity, message, openSnackBar};
+  return { open, severity, setSeverity, message, openSnackBar};
 };
 
 export default useSnackBar;

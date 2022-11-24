@@ -1,4 +1,4 @@
-import { Box, Container, Toolbar } from '@mui/material';
+import { Box, Container, Toolbar, useTheme } from '@mui/material';
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
@@ -35,8 +35,7 @@ function App() {
               overflow: 'auto',
             }}
           >
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-              <Toolbar />
+            <Container maxWidth={'xl'} sx={{ mt: 12, mb: 4 }}>
               <Routes>
                 <Route path='/' element={<SignIn />}/>
                 <Route path='/sign-up' element={<SignUp />}/>

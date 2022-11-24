@@ -3,15 +3,14 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Grid, Paper } from '@mui/material';
+import { Grid, Paper, SxProps, Theme } from '@mui/material';
 
-const style = {
+const style: SxProps<Theme> = {
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '40vw',
-  height: '60vh',
   border: '2px',
   boxShadow: 24,
   p: 4,

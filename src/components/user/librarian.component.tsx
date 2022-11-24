@@ -1,5 +1,5 @@
-import { Box, Button, FormControlLabel, Grid, IconButton, Link, TextField } from '@mui/material';
-import useAxios from 'axios-hooks';
+import { Autocomplete, Box, Button, CircularProgress, FormControlLabel, Grid, IconButton, Link, MenuItem, Select, Snackbar, TextField } from '@mui/material';
+import useAxios, { RefetchFunction } from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import { Librarian } from '../../models/librarian';
 import { User } from '../../models/user';
@@ -7,11 +7,15 @@ import AddIcon from '@mui/icons-material/Add';
 import TokenService from '../services/token.service';
 import CustomTable from '../table/table';
 import CustomModal from '../modal/modal';
+import Progress from '../progress/progress.component';
+import { Edit, PersonPinCircle } from '@mui/icons-material';
+import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
 
-export type Operation = 'Add' | 'Table';
+export type Operation = 'Add' | 'Edit';
 
 const LibrarianHome = () => {
   const [open, setOpen] = useState<boolean>(false);
+  const [editOpen, setEditOpen] = useState<boolean>(false);
   const columns: string[] = ['id', 'firstName', 'lastName',
     'phoneNumber', 'dob', 'age', 'address1', 'address2',
     'city', 'state', 'zipCode', 'username'];
@@ -31,7 +35,9 @@ const LibrarianHome = () => {
 
   useEffect(() => {
     getAllLibrarians();
-  }, [getAllLibrarians]);
+  }, []);
+
+  // console.log(librariansLoading);
 
   useEffect(() => {
     if (librarians) {
@@ -43,33 +49,47 @@ const LibrarianHome = () => {
   }, [librarians]);
 
   return (
-    <Grid
-      container
-      direction="column"
-      justifyContent="flex-start"
-      alignItems="center"
-    >
-      
+    <>
+      <Progress open = {librariansLoading} />
       <Grid
         container
-        direction="row"
+        direction="column"
         justifyContent="flex-start"
         alignItems="center"
       >
-        <IconButton onClick={() => {setOpen(true);}} >
-          <AddIcon />
-        </IconButton>
+        <Grid
+          container
+          direction="row"
+          justifyContent="flex-start"
+          alignItems="center"
+        >
+          <IconButton onClick={() => {setOpen(true);}} >
+            <AddIcon />
+          </IconButton>
+          <IconButton onClick={() => {setEditOpen(true);}} >
+            <Edit />
+          </IconButton>
+        </Grid>
+        <CustomTable rows={users} columns={columns} />
+        <CustomModal open={open} setOpen={setOpen} children={<AddLibrarian operation='Add' getAllLibrarians={getAllLibrarians} setOpen={setOpen} />} />
+        <CustomModal open={editOpen} setOpen={setEditOpen} children={<EditLibrarian librarians={librarians} getAllLibrarians={getAllLibrarians} setOpen={setEditOpen} />} />
       </Grid>
-      <CustomTable rows={users} columns={columns} />
-      <CustomModal open={open} setOpen={setOpen} children={<AddLibrarian />} />
-    </Grid>
+    </>
   );
 };
 
 export default LibrarianHome;
 
-const AddLibrarian = () => {
-  const [{ data: librarian, loading: loading, error: error }, postLibrarian ] = useAxios(
+interface AddProps {
+  operation: Operation;
+  librarian?: Librarian;
+  getAllLibrarians?: RefetchFunction<any, any>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddProps) => {
+  const { open, severity, message, openSnackBar } = useSnackBar();
+  const [{ data: __, loading: loading, error: error }, postLibrarian ] = useAxios(
     {
       method: 'POST',
       url: 'http://localhost:8080/librarian',
@@ -82,16 +102,46 @@ const AddLibrarian = () => {
     }
   );
 
-  const [user, setUser] = useState<User>({});
+  const [{ data: _, loading: updatedLoading, error: updatedError }, putLibrarian ] = useAxios(
+    {
+      method: 'PUT',
+      url: 'http://localhost:8080/librarian',
+      headers: {
+        'Authorization': 'Bearer ' + TokenService.getLocalRefreshToken()
+      }
+    },
+    { 
+      manual: true
+    }
+  );
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const [user, setUser] = useState<User>(librarian? librarian.librarianInfo : {});
+
+  useEffect(() => {
+    if (librarian) {
+      setUser(librarian.librarianInfo);
+    }
+  }, [librarian]);
+
+  const handleAdd = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data: Librarian = {
+      id: librarian?.id,
       librarianInfo: user
     };
-    postLibrarian({
-      data
-    });
+    if (operation === 'Add') {
+      await postLibrarian({
+        data
+      });
+      openSnackBar('success', 'Successfully created librarian');
+    } else {
+      await putLibrarian({
+        data
+      });
+      openSnackBar('success', 'Successfully updated librarian');
+    }
+    getAllLibrarians?.();
+    setTimeout(setOpen, 2000);
   };
 
   useEffect(() => {
@@ -99,7 +149,8 @@ const AddLibrarian = () => {
   }, [user]);
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+    <Box component="form" onSubmit={handleAdd} sx={{ mt: 1 }}>
+      <CustomSnackBar open={open} severity={severity} message={message} />
       <Grid
         container
         direction="row"
@@ -163,7 +214,7 @@ const AddLibrarian = () => {
             }}
           />
         </Grid>
-        <Grid item xs={12}>
+        {operation === 'Add' && <Grid item xs={12}>
           <TextField
             required
             fullWidth
@@ -181,8 +232,9 @@ const AddLibrarian = () => {
               });
             }}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid>}
+        
+        {operation === 'Add' && <Grid item xs={12}>
           <TextField
             required
             fullWidth
@@ -201,7 +253,7 @@ const AddLibrarian = () => {
               });
             }}
           />
-        </Grid>
+        </Grid>}
         <Grid item xs={12}>
           <TextField
             required
@@ -278,10 +330,41 @@ const AddLibrarian = () => {
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
           >
-            Submit
+            {operation === 'Add' ? 'Add': 'Update'}
           </Button>
         </Grid>
       </Grid>
     </Box>
+  );
+};
+
+interface EditProps {
+  librarians: Librarian[];
+  getAllLibrarians?: RefetchFunction<any, any>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const EditLibrarian = ({librarians, getAllLibrarians, setOpen}: EditProps) => {
+  const [librarian, setLibrarian] = useState<Librarian | null>(null);
+
+  useEffect(() => {
+    console.log(librarian);
+  }, [librarian]);
+
+  return (
+    <>
+      <Autocomplete 
+        options={librarians}
+        value={librarian}
+        onChange={(event, value: Librarian | null, reason) => {
+          setLibrarian(value);
+        }}
+        getOptionLabel={(option: Librarian) => {
+          const userOption: User = option.librarianInfo;
+          return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
+        }}
+        renderInput={(params) => <TextField {...params} label="Choose User" />}/>
+      {librarian && <AddLibrarian librarian={librarian} operation={'Edit'} getAllLibrarians={getAllLibrarians} setOpen={setOpen} />}
+    </>
   );
 };
