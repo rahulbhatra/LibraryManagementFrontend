@@ -1,4 +1,5 @@
 import { BearerAccessRefreshToken } from '../../models/authentication';
+import { User } from '../../models/user';
 
 const getLocalRefreshToken = (): string => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
@@ -11,6 +12,24 @@ const getLocalAccessToken = (): string => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
   const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
   return bearerAccessRefreshToken?.access_token;
+};
+
+const getLocalRoles = (): string[] => {
+  const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
+  const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
+  return bearerAccessRefreshToken?.roles;
+};
+
+const isMember = (): boolean => {
+  const roles = getLocalRoles();
+  const member: User['userType'] = 'MEMBER';
+  return roles.includes(member);
+};
+
+const isLibrarian = (): boolean => {
+  const roles = getLocalRoles();
+  const librarian: User['userType'] = 'LIBRARIAN';
+  return roles.includes(librarian);
 };
 
 const updateLocalAccessToken = (token: string) => {
@@ -41,11 +60,14 @@ const getAuthorization = () => {
 const TokenService = {
   getLocalRefreshToken,
   getLocalAccessToken,
+  getLocalRoles,
   updateLocalAccessToken,
   getBearerAccessRefreshToken,
   setBearerAccessRefreshToken,
   removeBearerAccessRefreshToken,
-  getAuthorization
+  getAuthorization,
+  isLibrarian,
+  isMember
 };
 
 export default TokenService;

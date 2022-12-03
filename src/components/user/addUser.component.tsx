@@ -1,146 +1,60 @@
-import { Autocomplete, Box, Button, CircularProgress, FormControlLabel, Grid, IconButton, Link, MenuItem, Select, Snackbar, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, Grid, TextField } from '@mui/material';
 import useAxios, { RefetchFunction } from 'axios-hooks';
-import React, { useEffect, useState } from 'react';
-import { Librarian } from '../../models/librarian';
+import { useEffect, useState } from 'react';
+import { Librarian, Member } from '../../models/librarian';
 import { User } from '../../models/user';
-import AddIcon from '@mui/icons-material/Add';
 import TokenService from '../services/token.service';
-import CustomTable from '../table/table';
-import CustomModal from '../modal/modal';
-import Progress from '../progress/progress.component';
-import { Edit, PersonPinCircle } from '@mui/icons-material';
 import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
-
-export type Operation = 'Add' | 'Edit';
-
-const LibrarianHome = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [editOpen, setEditOpen] = useState<boolean>(false);
-  const columns: string[] = ['id', 'firstName', 'lastName',
-    'phoneNumber', 'dob', 'age', 'address1', 'address2',
-    'city', 'state', 'zipCode', 'username'];
-  const [users, setUsers] = useState<User[]>([]);
-  const [{ data: librarians, loading: librariansLoading, error: librariansError}, getAllLibrarians] = useAxios(
-    {
-      url: 'http://localhost:8080/librarian/getAllLibrarians',
-      method: 'GET',
-      headers: {
-        'Authorization': TokenService.getAuthorization()
-      }
-    },
-    {
-      manual: true,
-    }
-  );
-
-  useEffect(() => {
-    getAllLibrarians();
-  }, []);
-
-  // console.log(librariansLoading);
-
-  useEffect(() => {
-    if (librarians) {
-      const users = librarians.map((librarian: Librarian) => {
-        return librarian.user;
-      });
-      setUsers(users);
-    }
-  }, [librarians]);
-
-  return (
-    <>
-      <Progress open = {librariansLoading} />
-      <Grid
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      >
-        <Grid
-          container
-          direction="row"
-          justifyContent="flex-start"
-          alignItems="center"
-        >
-          <IconButton onClick={() => {setOpen(true);}} >
-            <AddIcon />
-          </IconButton>
-          <IconButton onClick={() => {setEditOpen(true);}} >
-            <Edit />
-          </IconButton>
-        </Grid>
-        <CustomTable rows={users} columns={columns} />
-        <CustomModal open={open} setOpen={setOpen} children={<AddLibrarian operation='Add' getAllLibrarians={getAllLibrarians} setOpen={setOpen} />} />
-        <CustomModal open={editOpen} setOpen={setEditOpen} children={<EditLibrarian librarians={librarians} getAllLibrarians={getAllLibrarians} setOpen={setEditOpen} />} />
-      </Grid>
-    </>
-  );
-};
-
-export default LibrarianHome;
+import { Operation } from './user.component';
 
 interface AddProps {
   operation: Operation;
-  librarian?: Librarian;
-  getAllLibrarians?: RefetchFunction<any, any>;
+  userType: User['userType'];
+  librarians?: Librarian[];
+  members?: Member[];
+  getAll?: RefetchFunction<any, any>;
+  post?: RefetchFunction<any, any>;
+  put?: RefetchFunction<any, any>;
+  remove?: RefetchFunction<any, any>;
+  loading?: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddProps) => {
+export const AddUser = ({ userType, librarians, members, getAll, operation, post, put, remove, loading, setOpen }: AddProps) => {
   const { open, severity, message, openSnackBar } = useSnackBar();
-  const [{ data: __, loading: loading, error: error }, postLibrarian ] = useAxios(
-    {
-      method: 'POST',
-      url: 'http://localhost:8080/librarian',
-      headers: {
-        'Authorization': 'Bearer ' + TokenService.getLocalRefreshToken()
-      }
-    },
-    { 
-      manual: true
-    }
-  );
+  const [user, setUser] = useState<User>({});
+  const [librarian, setLibrarian] = useState<Librarian | null>( null);
+  const [member, setMember] = useState<Member>({});
 
-  const [{ data: _, loading: updatedLoading, error: updatedError }, putLibrarian ] = useAxios(
-    {
-      method: 'PUT',
-      url: 'http://localhost:8080/librarian',
-      headers: {
-        'Authorization': 'Bearer ' + TokenService.getLocalRefreshToken()
-      }
-    },
-    { 
-      manual: true
-    }
-  );
-
-  const [user, setUser] = useState<User>(librarian? librarian.user : {});
+  console.log(librarians);
 
   useEffect(() => {
-    if (librarian) {
-      setUser(librarian.user);
+    if (librarian?.user) {
+      setUser(librarian?.user);
     }
-  }, [librarian]);
+    if (member?.user) {
+      setUser(member?.user);
+    }
+  }, [librarian, member]);
 
   const handleAdd = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data: Librarian = {
-      id: librarian?.id,
-      user: user
+    const data: Librarian | Member = {
+      id: userType === 'LIBRARIAN' ? librarian?.id : member.id,
+      user: user,
+      librarian: member.librarian,
     };
     if (operation === 'Add') {
-      await postLibrarian({
-        data
-      });
-      openSnackBar('success', 'Successfully created librarian');
+      await post?.({ data });
+      openSnackBar('success', `Successfully created ${user.userType}`);
+    } else if (operation === 'Edit') {
+      await put?.({ data });
+      openSnackBar('success', `Successfully updated ${user.userType}`);
     } else {
-      await putLibrarian({
-        data
-      });
-      openSnackBar('success', 'Successfully updated librarian');
+      await remove?.({ data });
+      openSnackBar('success', `Successfully updated ${user.userType}`);
     }
-    getAllLibrarians?.();
+    getAll?.();
     setTimeout(setOpen, 2000);
   };
 
@@ -151,13 +65,42 @@ const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddPr
   return (
     <Box component="form" onSubmit={handleAdd} sx={{ mt: 1 }}>
       <CustomSnackBar open={open} severity={severity} message={message} />
-      <Grid
+      { operation !== 'Delete' && (<Grid
         container
         direction="row"
         justifyContent="flex-start"
         alignItems="center"
         rowSpacing={2} columnSpacing={2}
       >
+        {operation !== 'Add' && librarians ? (
+          <Grid item xs={12}>
+            <Autocomplete 
+              options={librarians}
+              value={librarian}
+              onChange={(event, value: Librarian | null, reason) => {
+                value && setLibrarian(value);
+              }}
+              getOptionLabel={(option: Librarian) => {
+                const userOption: User = option.user || {};
+                return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
+              }}
+              renderInput={(params) => <TextField {...params} label="Choose User" />}/>
+          </Grid>
+        ) : members && (
+          <Grid item xs={12}>
+            <Autocomplete 
+              options={members}
+              value={member}
+              onChange={(event, value: Member | null, reason) => {
+                value && setMember(value);
+              }}
+              getOptionLabel={(option: Member) => {
+                const userOption: User = option.user || {};
+                return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
+              }}
+              renderInput={(params) => <TextField {...params} label="Choose User" />}/>
+          </Grid>
+        )}
         <Grid item xs={4} sm={4}>
           <TextField
             required
@@ -305,7 +248,6 @@ const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddPr
             label="date of birth"
             id="dob"
             autoComplete="date of birth"
-            defaultValue="1997-10-25"
             type="date"
             InputLabelProps={{
               shrink: true,
@@ -320,6 +262,26 @@ const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddPr
             }}
           />
         </Grid>
+        {operation === 'Add' && userType === 'MEMBER' && librarians && (
+          <Grid item xs={12}>
+            <Autocomplete 
+              options={librarians}
+              value={member.librarian}
+              onChange={(event, value: Librarian | null, reason) => {
+                value && setMember((oldMember) => {
+                  return {
+                    ...oldMember,
+                    librarian: value
+                  };
+                });
+              }}
+              getOptionLabel={(option: Librarian) => {
+                const userOption: User = option.user || {};
+                return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
+              }}
+              renderInput={(params) => <TextField {...params} label="Choose Librarian" />}/>
+          </Grid>
+        )}
         <Grid container 
           direction="row"
           justifyContent="center"
@@ -333,38 +295,27 @@ const AddLibrarian = ({ librarian, operation, getAllLibrarians, setOpen }: AddPr
             {operation === 'Add' ? 'Add': 'Update'}
           </Button>
         </Grid>
-      </Grid>
+      </Grid>)}
+      {/* {operation == 'Delete' && (
+        <Grid container 
+          direction="row"
+          justifyContent="center"
+          alignItems="center"xs={12}>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={!user}
+            onClick={() => {
+              if (user) {
+                deleteLibrarian({ data: user });
+              }
+            }}
+          >
+            Delete
+          </Button>
+        </Grid>
+      )} */}
     </Box>
-  );
-};
-
-interface EditProps {
-  librarians: Librarian[];
-  getAllLibrarians?: RefetchFunction<any, any>;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const EditLibrarian = ({librarians, getAllLibrarians, setOpen}: EditProps) => {
-  const [librarian, setLibrarian] = useState<Librarian | null>(null);
-
-  useEffect(() => {
-    console.log(librarian);
-  }, [librarian]);
-
-  return (
-    <>
-      <Autocomplete 
-        options={librarians}
-        value={librarian}
-        onChange={(event, value: Librarian | null, reason) => {
-          setLibrarian(value);
-        }}
-        getOptionLabel={(option: Librarian) => {
-          const userOption: User = option.user;
-          return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
-        }}
-        renderInput={(params) => <TextField {...params} label="Choose User" />}/>
-      {librarian && <AddLibrarian librarian={librarian} operation={'Edit'} getAllLibrarians={getAllLibrarians} setOpen={setOpen} />}
-    </>
   );
 };

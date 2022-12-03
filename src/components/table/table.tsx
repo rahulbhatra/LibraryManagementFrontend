@@ -49,9 +49,15 @@ const CustomTable = <T extends Object>({rows, columns} : Props<T>) => {
                 {columns.map((column: string) => {
                   return (
                     <>
-                      {
-                        <TableCell width={150}>{
-                          row[column]}</TableCell>
+                      {row[column] instanceof Array ? (
+                        <TableCell key={column} width={300}>
+                          {row[column].map((x: any) => {
+                            return x.firstName + x.lastName;
+                          })}
+                        </TableCell>
+                      ) : (
+                        <TableCell key={column + row[column]} width={150}>{row[column]}</TableCell>  
+                      )
                       }
                     </>
                   );

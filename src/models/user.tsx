@@ -13,6 +13,7 @@ export type User = {
   zipCode?: string;
   username?: string;
   password?: string;
+  userType?: 'LIBRARIAN' | 'MEMBER'
 };
 
 export type UserKeys = keyof User;

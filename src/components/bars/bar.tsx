@@ -2,7 +2,7 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { mainListItems, secondaryListItems } from './listitem';
+import MainListItems from './listitem';
 import { Avatar, Menu, MenuItem, Tooltip, IconButton, Drawer as MuiDrawer, Badge } from '@mui/material';
 import { AccountCircle, Logout, Menu as MenuIcon } from '@mui/icons-material';
 import TokenService from '../services/token.service';
@@ -99,7 +99,7 @@ export const Header = ({open, setOpen, toggleDrawer}: BarProps) => {
           noWrap
           sx={{ flexGrow: 1 }}
         >
-              Dashboard
+              Library Management
         </Typography>
         <IconButton color="inherit">
           <Badge badgeContent={4} color="secondary">
@@ -181,9 +181,9 @@ export const SideBar = ({open, toggleDrawer} : BarProps) => {
       </Toolbar>
       <Divider />
       <List component="nav">
-        {mainListItems}
-        <Divider sx={{ my: 1 }} />
-        {secondaryListItems}
+        <MainListItems />
+        {/* <Divider sx={{ my: 1 }} />
+        {secondaryListItems} */}
       </List>
     </Drawer>
   );

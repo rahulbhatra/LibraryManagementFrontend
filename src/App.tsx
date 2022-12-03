@@ -8,7 +8,7 @@ import Documents from './components/document/documents';
 import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
 import SignIn from './components/signin/signin';
 import SignUp from './components/signup/signup';
-import LibrarianHome from './components/user/librarian.component';
+import UserComponent from './components/user/user.component';
 
 function App() {
   const [open, setOpen] = React.useState(true);
@@ -43,7 +43,7 @@ function App() {
                 <Route element={<ProtectedRoutes />}>
                   <Route path='/dashboard' element={<Dashboard />}/>
                   <Route path='/documents' element={<Documents />}/>
-                  <Route path="/librarian" element={<LibrarianHome />}/>
+                  <Route path="/user" element={<UserComponent />}/>
                 </Route>
               </Routes>
             </Container>
