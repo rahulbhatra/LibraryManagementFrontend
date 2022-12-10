@@ -17,8 +17,7 @@ export type Operation = 'Add' | 'Edit' | 'Delete';
 const UserComponent = () => {
 
   const [open, setOpen] = useState<boolean>(false);
-  const [editOpen, setEditOpen] = useState<boolean>(false);
-  const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
+  const [operation, setOperation] = useState<Operation>('Add');
   const [userType, setUserType] = useState<User['userType']>('LIBRARIAN');
   const userTypes: User['userType'][] = ['LIBRARIAN', 'MEMBER'];
   const columns: string[] = ['id', 'firstName', 'lastName',
@@ -109,13 +108,25 @@ const UserComponent = () => {
           alignItems="center"
         >
           <Grid item xs={2}>
-            <IconButton onClick={() => {setOpen(true);}} >
+            <IconButton 
+              onClick={() => {
+                setOpen(true);
+                setOperation('Add');
+              }} >
               <AddIcon />
             </IconButton>
-            <IconButton onClick={() => {setEditOpen(true);}} >
+            <IconButton 
+              onClick={() => {
+                setOpen(true);
+                setOperation('Edit');
+              }} >
               <Edit />
             </IconButton>
-            <IconButton onClick={() => {setDeleteOpen(true);}}>
+            <IconButton 
+              onClick={() => {
+                setOpen(true);
+                setOperation('Delete');
+              }}>
               <Delete />
             </IconButton>
           </Grid>
@@ -134,9 +145,9 @@ const UserComponent = () => {
           </Grid>
         </Grid>
         <CustomTable rows={users} columns={columns} />
-        <CustomModal open={open} setOpen={setOpen} children={<AddUser userType={userType} operation='Add' librarians={librarians} getAll={getAll} setOpen={setOpen} post={post}/>} />
-        <CustomModal open={editOpen} setOpen={setEditOpen} children={<AddUser userType={userType} operation='Edit' librarians={librariansOrMembers} getAll={getAll} setOpen={setEditOpen} put={put} />} />
-        <CustomModal open={deleteOpen} setOpen={setDeleteOpen} children={<AddUser userType={userType} operation='Delete' librarians={librariansOrMembers} getAll={getAll} setOpen={setEditOpen} remove={remove} />} />
+        {operation === 'Add' && <CustomModal open={open} setOpen={setOpen} children={<AddUser userType={userType} operation='Add' librarians={librarians} getAll={getAll} setOpen={setOpen} post={post}/>} />}
+        {operation === 'Edit' && <CustomModal open={open} setOpen={setOpen} children={<AddUser userType={userType} operation='Edit' librarians={librariansOrMembers} getAll={getAll} setOpen={setOpen} put={put} />} />}
+        {operation === 'Delete' && <CustomModal open={open} setOpen={setOpen} children={<AddUser userType={userType} operation='Delete' librarians={librariansOrMembers} getAll={getAll} setOpen={setOpen} remove={remove} />} />}
       </Grid>
     </>
   );

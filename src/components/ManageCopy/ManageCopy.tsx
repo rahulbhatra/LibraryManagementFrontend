@@ -1,43 +1,31 @@
-import { Autocomplete, AutocompleteRenderInputParams, Box, Button, CircularProgress, FormControlLabel, Grid, IconButton, Link, MenuItem, Select, Snackbar, TextField } from '@mui/material';
-import useAxios, { RefetchFunction } from 'axios-hooks';
-import React, { useEffect, useState } from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
-import TokenService from '../services/token.service';
-import CustomTable from '../table/table';
+import { Add, Delete, Search } from '@mui/icons-material';
+import { Autocomplete, Grid, IconButton, TextField } from '@mui/material';
+import useAxios from 'axios-hooks';
+import { useEffect, useState } from 'react';
+import useFetchDocuments from '../../hooks/useFetchDocuments';
+import { TypeOfDocument } from '../../models/document.model';
 import CustomModal from '../modal/modal';
 import Progress from '../progress/progress.component';
-import { Delete, Edit } from '@mui/icons-material';
-import { Book, Magazine, Thesis, TypeOfDocument } from '../../models/document.model';
-export type AllDocs = Book | Magazine | Thesis
-import AddDocument from './document.add';
-import useFetchDocuments from '../../hooks/useFetchDocuments';
+import CustomTable from '../table/table';
+import { Operation } from '../user/user.component';
+import AddCopy from './copy.add';
 
-export type Operation = 'Add' | 'Edit' | 'Delete';
-
-const Documents = () => {
+const ManageCopy = () => {
+  const columns: string[] = ['title', 'edition', 'year', 'category', 'authorsList', 'totalCopies'];
+  const { documents, documentsLoading, fetchDocuments } = useFetchDocuments();
   const [open, setOpen] = useState<boolean>(false);
   const [operation, setOperation] = useState<Operation>('Add');
   const [type, setType] = useState<TypeOfDocument>('BOOK');
-  const columns: string[] = ['title', 'edition', 'year', 'category', 'authorsList'];
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [authorTerm, setAuthorTerm] = useState<string | null>(null);
-  const { documents, documentsLoading, fetchDocuments } = useFetchDocuments();
 
   useEffect(() => {
-    fetchDocuments(type, authorTerm, searchTerm);
+    const fetch =async () => {
+      const data = await fetchDocuments('BOOK', null, null);
+      console.log(data);
+    };
+    fetch();
   }, []);
-
-  
-
-  // useEffect(() => {
-  //   if (librarians) {
-  //     const documents = librarians.map((librarian: Librarian) => {
-  //       return librarian.user;
-  //     });
-  //     setDocuments(documents);
-  //   }
-  // }, [librarians]);
 
   return (
     <>
@@ -55,16 +43,16 @@ const Documents = () => {
           alignItems="center"
           spacing={1}
         >
-          <Grid item xs={1}>
+          <Grid item xs={0}>
             <IconButton 
               onClick={() => {
                 setOpen(true);
                 setOperation('Add');
               }}
             >
-              <AddIcon />
+              <Add />
             </IconButton>
-            <IconButton 
+            {/* <IconButton 
               onClick={() => {
                 setOpen(true);
                 setOperation('Edit');
@@ -78,9 +66,9 @@ const Documents = () => {
                 setOperation('Delete');
               }}>
               <Delete />
-            </IconButton>
+            </IconButton> */}
           </Grid>
-          <Grid item xs={2}>
+          {/* <Grid item xs={2}>
             <Autocomplete
               value={type}
               onChange={(event, value, reason) => {
@@ -90,7 +78,7 @@ const Documents = () => {
               options={['BOOK', 'MAGAZINE', 'JOURNAL_ARTICLE', 'THESIS','REPORT']} 
               renderInput={(params) => <TextField {...params} label="Document Type" />}
             />
-          </Grid>
+          </Grid> */}
           <Grid item xs={2}>
             <TextField
               value={searchTerm}
@@ -115,17 +103,18 @@ const Documents = () => {
                 fetchDocuments(type, authorTerm, searchTerm);
               }}
             >
-              <SearchIcon />
+              <Search />
             </IconButton>
           </Grid>
         </Grid>
         {documents && <CustomTable rows={documents} columns={columns} />}
-        {operation === 'Add' && (<CustomModal open={open} setOpen={setOpen} children={<AddDocument operation={operation} fetchDocument={() => fetchDocuments(type, authorTerm, searchTerm)} setOpen={setOpen} />} />)}
-        {operation === 'Edit' && (<CustomModal open={open} setOpen={setOpen} children={<AddDocument operation={operation} documents={documents} fetchDocument={() => fetchDocuments(type, authorTerm, searchTerm)} setOpen={setOpen} />} />)}
-        {operation === 'Delete' && (<CustomModal open={open} setOpen={setOpen} children={<AddDocument operation={operation} documents={documents} fetchDocument={() => fetchDocuments(type, authorTerm, searchTerm)} setOpen={setOpen} />} />)}
+        {operation === 'Add' && (<CustomModal open={open} setOpen={setOpen} children={<AddCopy operation={operation} documents={documents} fetchDocument={() => fetchDocuments(type, authorTerm, searchTerm)} setOpen={setOpen} />} />)}
+        {/* {operation === 'Edit' && (<CustomModal open={open} setOpen={setOpen} children={<AddDocument operation={operation} documents={documents} fetchDocument={() => fetchDocuments(type, authorTerm, searchTerm)} setOpen={setOpen} />} />)}
+        {operation === 'Delete' && (<CustomModal open={open} setOpen={setOpen} children={<AddDocument operation={operation} documents={documents} fetchDocument={() => fetchDocuments(type, authorTerm, searchTerm)} setOpen={setOpen} />} />)} */}
       </Grid>
     </>
   );
+  
 };
 
-export default Documents;
+export default ManageCopy;

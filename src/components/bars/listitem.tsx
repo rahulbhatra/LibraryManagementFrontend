@@ -6,11 +6,10 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ArticleIcon from '@mui/icons-material/Article';
 import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import LayersIcon from '@mui/icons-material/Layers';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import React from 'react';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import React, { useEffect, useState } from 'react';
 import TokenService from '../services/token.service';
-import { User } from '../../models/user';
 
 const MainListItems = () => {
 
@@ -39,18 +38,26 @@ const MainListItems = () => {
         <ListItemText primary="User" />
       </ListItemButton>
       )}
-      <ListItemButton>
+      {(<ListItemButton href="/">
         <ListItemIcon>
-          <BarChartIcon />
+          <FindInPageIcon />
         </ListItemIcon>
-        <ListItemText primary="Reports" />
+        <ListItemText primary="Borrow / Return" />
       </ListItemButton>
-      <ListItemButton>
+      )}
+      {isLibrarian && (<ListItemButton href="/manage-copy">
+        <ListItemIcon>
+          <FileCopyIcon />
+        </ListItemIcon>
+        <ListItemText primary="Manage Copies" />
+      </ListItemButton>
+      )}
+      {/* <ListItemButton>
         <ListItemIcon>
           <LayersIcon />
         </ListItemIcon>
         <ListItemText primary="Integrations" />
-      </ListItemButton>
+      </ListItemButton> */}
     </React.Fragment>
   );
 };

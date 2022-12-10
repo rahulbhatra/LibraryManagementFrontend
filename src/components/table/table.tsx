@@ -49,16 +49,18 @@ const CustomTable = <T extends Object>({rows, columns} : Props<T>) => {
                 {columns.map((column: string) => {
                   return (
                     <>
-                      {row[column] instanceof Array ? (
+                      {column === 'authorsList' && Array.isArray(row[column]) ? (
                         <TableCell key={column} width={300}>
-                          {row[column].map((x: any) => {
-                            return x.firstName + x.lastName;
+                          {row[column].map((x: any, index: number) => {
+                            const person = x.person;
+                            const len = row[column]?.length;
+                            const name = person?.firstName + ' ' + person?.lastName + (index === len - 1 ? '': ',');
+                            return name;
                           })}
                         </TableCell>
                       ) : (
                         <TableCell key={column + row[column]} width={150}>{row[column]}</TableCell>  
-                      )
-                      }
+                      )}
                     </>
                   );
                 }

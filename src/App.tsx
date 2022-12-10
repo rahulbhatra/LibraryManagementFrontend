@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Header, SideBar } from './components/bars/bar';
+import ManageCopy from './components/ManageCopy/ManageCopy';
 import Dashboard from './components/dashboard/dashboard';
 import Documents from './components/document/documents';
 import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
@@ -40,10 +41,11 @@ function App() {
                 <Route path='/' element={<SignIn />}/>
                 <Route path='/sign-up' element={<SignUp />}/>
                 <Route path='/sign-in' element={<SignIn />}/>
+                <Route path='/dashboard' element={<Dashboard />}/>
                 <Route element={<ProtectedRoutes />}>
-                  <Route path='/dashboard' element={<Dashboard />}/>
                   <Route path='/documents' element={<Documents />}/>
                   <Route path="/user" element={<UserComponent />}/>
+                  <Route path="/manage-copy" element={<ManageCopy />} />
                 </Route>
               </Routes>
             </Container>

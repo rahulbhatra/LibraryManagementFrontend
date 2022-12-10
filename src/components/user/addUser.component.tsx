@@ -65,7 +65,7 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
   return (
     <Box component="form" onSubmit={handleAdd} sx={{ mt: 1 }}>
       <CustomSnackBar open={open} severity={severity} message={message} />
-      { operation !== 'Delete' && (<Grid
+      <Grid
         container
         direction="row"
         justifyContent="flex-start"
@@ -101,186 +101,190 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
               renderInput={(params) => <TextField {...params} label="Choose User" />}/>
           </Grid>
         )}
-        <Grid item xs={4} sm={4}>
-          <TextField
-            required
-            fullWidth
-            id="firstName"
-            value={user?.firstName}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  firstName: event.target.value
-                };
-              });
-            }}
-            label="First Name"
-            autoComplete="firstName"
-            autoFocus
-          />
-        </Grid>
-        <Grid item xs={4} sm={4}>
-          <TextField
-            fullWidth
-            id="middleName"
-            label="Middle Name"
-            name="middleName"
-            autoComplete="family-name"
-            value={user.middleName}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  middleName: event.target.value
-                };
-              });
-            }}
-          />
-        </Grid>
-        <Grid item xs={4} sm={4}>
-          <TextField
-            required
-            fullWidth
-            id="lastName"
-            label="Last Name"
-            name="lastName"
-            autoComplete="family-name"
-            value={user.lastName}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  lastName: event.target.value
-                };
-              });
-            }}
-          />
-        </Grid>
-        {operation === 'Add' && <Grid item xs={12}>
-          <TextField
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            value={user.username}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  username: event.target.value
-                };
-              });
-            }}
-          />
-        </Grid>}
+        {operation !== 'Delete' && (
+          <>
+            <Grid item xs={4} sm={4}>
+              <TextField
+                required
+                fullWidth
+                id="firstName"
+                value={user?.firstName}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      firstName: event.target.value
+                    };
+                  });
+                }}
+                label="First Name"
+                autoComplete="firstName"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={4} sm={4}>
+              <TextField
+                fullWidth
+                id="middleName"
+                label="Middle Name"
+                name="middleName"
+                autoComplete="family-name"
+                value={user.middleName}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      middleName: event.target.value
+                    };
+                  });
+                }}
+              />
+            </Grid>
+            <Grid item xs={4} sm={4}>
+              <TextField
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                autoComplete="family-name"
+                value={user.lastName}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      lastName: event.target.value
+                    };
+                  });
+                }}
+              />
+            </Grid>
+            {operation === 'Add' && <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                value={user.username}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      username: event.target.value
+                    };
+                  });
+                }}
+              />
+            </Grid>}
         
-        {operation === 'Add' && <Grid item xs={12}>
-          <TextField
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            value={user.password}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  password: event.target.value
-                };
-              });
-            }}
-          />
-        </Grid>}
-        <Grid item xs={12}>
-          <TextField
-            required
-            fullWidth
-            name="address1"
-            label="address 1"
-            id="address1"
-            autoComplete="address 1"
-            value={user.address1}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  address1: event.target.value
-                };
-              });
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            name="address2"
-            label="address 2"
-            id="address2"
-            autoComplete="address 2"
-            value={user.address2}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  address2: event.target.value
-                };
-              });
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            required
-            fullWidth
-            name="dob"
-            label="date of birth"
-            id="dob"
-            autoComplete="date of birth"
-            type="date"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setUser((oldUser) => {
-                return {
-                  ...oldUser,
-                  dob: new Date(event.target.value).toISOString()
-                };
-              });
-            }}
-          />
-        </Grid>
-        {operation === 'Add' && userType === 'MEMBER' && librarians && (
-          <Grid item xs={12}>
-            <Autocomplete 
-              options={librarians}
-              value={member.librarian}
-              onChange={(event, value: Librarian | null, reason) => {
-                value && setMember((oldMember) => {
-                  return {
-                    ...oldMember,
-                    librarian: value
-                  };
-                });
-              }}
-              getOptionLabel={(option: Librarian) => {
-                const userOption: User = option.user || {};
-                return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
-              }}
-              renderInput={(params) => <TextField {...params} label="Choose Librarian" />}/>
-          </Grid>
+            {operation === 'Add' && <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+                value={user.password}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      password: event.target.value
+                    };
+                  });
+                }}
+              />
+            </Grid>}
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="address1"
+                label="address 1"
+                id="address1"
+                autoComplete="address 1"
+                value={user.address1}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      address1: event.target.value
+                    };
+                  });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                name="address2"
+                label="address 2"
+                id="address2"
+                autoComplete="address 2"
+                value={user.address2}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      address2: event.target.value
+                    };
+                  });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="dob"
+                label="date of birth"
+                id="dob"
+                autoComplete="date of birth"
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setUser((oldUser) => {
+                    return {
+                      ...oldUser,
+                      dob: new Date(event.target.value).toISOString()
+                    };
+                  });
+                }}
+              />
+            </Grid>
+            {operation === 'Add' && userType === 'MEMBER' && librarians && (
+              <Grid item xs={12}>
+                <Autocomplete 
+                  options={librarians}
+                  value={member.librarian}
+                  onChange={(event, value: Librarian | null, reason) => {
+                    value && setMember((oldMember) => {
+                      return {
+                        ...oldMember,
+                        librarian: value
+                      };
+                    });
+                  }}
+                  getOptionLabel={(option: Librarian) => {
+                    const userOption: User = option.user || {};
+                    return userOption.firstName + ' ' + userOption.lastName + `(${userOption.username})`;
+                  }}
+                  renderInput={(params) => <TextField {...params} label="Choose Librarian" />}/>
+              </Grid>
+            )}
+          </>
         )}
         <Grid container 
           direction="row"
@@ -292,30 +296,10 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
           >
-            {operation === 'Add' ? 'Add': 'Update'}
+            {operation === 'Add' ? 'Add': operation === 'Edit' ? 'Edit' : 'Delete'}
           </Button>
         </Grid>
-      </Grid>)}
-      {/* {operation == 'Delete' && (
-        <Grid container 
-          direction="row"
-          justifyContent="center"
-          alignItems="center"xs={12}>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={!user}
-            onClick={() => {
-              if (user) {
-                deleteLibrarian({ data: user });
-              }
-            }}
-          >
-            Delete
-          </Button>
-        </Grid>
-      )} */}
+      </Grid>
     </Box>
   );
 };

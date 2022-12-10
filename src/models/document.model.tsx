@@ -21,6 +21,8 @@ export type TypeOfDocument = 'BOOK' | 'MAGAZINE' | 'JOURNAL_ARTICLE' | 'THESIS' 
 class BaseDoc {
   authors?: Person[];
   authorsList?: Author[];
+  copies?: Copy[];
+  totalCopies?: number;
 }
 
 export class Book extends BaseDoc {
@@ -50,4 +52,11 @@ export class Thesis extends BaseDoc {
   document?: Document;
   topic?: string;
   publishedBy?: Publisher;
+}
+
+export class Copy {
+  id?: number;
+  document?: Document;
+  roomNumber?: number;
+  level?: number;
 }
