@@ -8,7 +8,7 @@ const useFetchDocuments = () => {
       url: 'http://localhost:8080/document/getAll',
       method: 'POST',
       headers: {
-        'Authorization': TokenService.getAuthorization()
+        'Authorization': TokenService.getLocalAccessToken()
       }
     },
     {
@@ -16,14 +16,16 @@ const useFetchDocuments = () => {
     }
   );
 
-  const fetchDocuments = (type: TypeOfDocument, authorTerm: string | null, searchTerm: string | null) => {
+  const fetchDocuments = (type: TypeOfDocument, authorTerm: string | null, searchTerm: string | null, combinedSearch?: boolean) => {
     switch (type) {
     case 'BOOK':
       getAllDocuments({
         url: 'http://localhost:8080/document/getAll/book',
         data: {
           'author': authorTerm,
-          'title': searchTerm
+          'title': searchTerm,
+          'combinedSearch': combinedSearch,
+          'searchTerm': searchTerm,
         }
       });
       break;

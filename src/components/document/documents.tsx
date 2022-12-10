@@ -1,4 +1,4 @@
-import { Autocomplete, AutocompleteRenderInputParams, Box, Button, CircularProgress, FormControlLabel, Grid, IconButton, Link, MenuItem, Select, Snackbar, TextField } from '@mui/material';
+import { Autocomplete, AutocompleteRenderInputParams, Box, Button, Checkbox, CircularProgress, FormControlLabel, Grid, IconButton, Link, MenuItem, Select, Snackbar, TextField, Typography } from '@mui/material';
 import useAxios, { RefetchFunction } from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
@@ -22,6 +22,7 @@ const Documents = () => {
   const columns: string[] = ['title', 'edition', 'year', 'category', 'authorsList'];
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [authorTerm, setAuthorTerm] = useState<string | null>(null);
+  const [combineSearch, setCombineSearch] = useState<boolean>(false);
   const { documents, documentsLoading, fetchDocuments } = useFetchDocuments();
 
   useEffect(() => {
@@ -91,28 +92,43 @@ const Documents = () => {
               renderInput={(params) => <TextField {...params} label="Document Type" />}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid 
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            spacing={1}
+            item 
+            xs={4}>
+            <Typography variant='button'> Combine Search</Typography>
+            <Checkbox value={combineSearch} onClick={(event) => {
+              setCombineSearch(!combineSearch);
+            }} />
+          </Grid>
+          <Grid item xs={combineSearch ? 4 : 2} style={{ width: combineSearch ? '64px' : '32px' }}>
             <TextField
               value={searchTerm}
               onChange={(event) => {
                 setSearchTerm(event.target.value);
               }}
-              placeholder={'Search By Title'}
+              placeholder={'Search By ' + (combineSearch ? 'Title / Author' : ' Title')}
             />
           </Grid>
-          <Grid item xs={2}>
-            <TextField
-              value={authorTerm}
-              onChange={(event) => {
-                setAuthorTerm(event.target.value);
-              }}
-              placeholder={'Search By Author'}
-            />
-          </Grid>
+          {!combineSearch && (
+            <Grid item xs={2}>
+              <TextField
+                value={authorTerm}
+                onChange={(event) => {
+                  setAuthorTerm(event.target.value);
+                }}
+                placeholder={'Search By Author'}
+              />
+            </Grid>
+          )}
           <Grid item xs={1}>
             <IconButton
               onClick={() => {
-                fetchDocuments(type, authorTerm, searchTerm);
+                fetchDocuments(type, authorTerm, searchTerm, combineSearch);
               }}
             >
               <SearchIcon />

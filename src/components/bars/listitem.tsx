@@ -38,7 +38,7 @@ const MainListItems = () => {
         <ListItemText primary="User" />
       </ListItemButton>
       )}
-      {(<ListItemButton href="/">
+      {isMember && (<ListItemButton href="/borrow-return">
         <ListItemIcon>
           <FindInPageIcon />
         </ListItemIcon>

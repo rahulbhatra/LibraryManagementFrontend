@@ -10,6 +10,7 @@ import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
 import SignIn from './components/signin/signin';
 import SignUp from './components/signup/signup';
 import UserComponent from './components/user/user.component';
+import BorrowReturnComponent from './components/BorrowReturn/BorrowReturn';
 
 function App() {
   const [open, setOpen] = React.useState(true);
@@ -46,6 +47,7 @@ function App() {
                   <Route path='/documents' element={<Documents />}/>
                   <Route path="/user" element={<UserComponent />}/>
                   <Route path="/manage-copy" element={<ManageCopy />} />
+                  <Route path="/borrow-return" element={<BorrowReturnComponent />} />
                 </Route>
               </Routes>
             </Container>

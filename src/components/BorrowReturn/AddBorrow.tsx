@@ -1,11 +1,12 @@
 import { Autocomplete, Box, Button, Grid, TextField } from '@mui/material';
 import useAxios from 'axios-hooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { BorrowReturn } from '../../models/borrow-return';
 import { Copy, Thesis, TypeOfDocument } from '../../models/document.model';
-import { AllDocs } from '../document/documents';
+import { AllDocs, Operation } from '../document/documents';
 import TokenService from '../services/token.service';
 import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
-import { Operation } from '../user/user.component';
+
 
 interface AddProps {
   operation: Operation;
@@ -15,36 +16,51 @@ interface AddProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AddCopy = ({ existingDocument, documents, operation, fetchDocument, setOpen }: AddProps) => {
-
+const AddBorrow = ({ existingDocument, documents, operation, fetchDocument, setOpen }: AddProps) => {
   const { open, severity, message, openSnackBar } = useSnackBar();
   const [doc, setDoc] = useState<AllDocs | null>(existingDocument ? existingDocument : null);
-  // const [type, setType] = useState<TypeOfDocument>('BOOK');
   const [copies, setCopies] = useState<Copy[]>([]);
-  // const [document, setDocument] = useState<Document>();
+  const [selectedCopy, setSelectedCopy] = useState<Copy | null>(null);
 
-  const [{ data: copiesData, loading: copiesLoading, error: copiesError }, insertCopies] = useAxios(
+  const [{ data: members, loading: librariansLoading, error: librariansError}, getAll] = useAxios(
     {
+      url: 'http://localhost:8080/user/getAllLibrarians}',
+      method: 'GET',
+      headers: {
+        'Authorization': TokenService.getLocalAccessToken()
+      }
+    },
+    {
+      manual: true,
+    }
+  );
+
+  const [{ data: borrowReturnData, loading: borrowReturnLoading, error: borrowReturnError}, createOrUpdateBorrowReturn] = useAxios(
+    {
+      url: 'http://localhost:8080/copy/createOrUpdateBorrowReturn',
       method: 'POST',
-      url: 'http://localhost:8080/copy/createOrUpdateCopies',
       headers: {
         'Authorization': 'Bearer ' + TokenService.getLocalAccessToken()
       }
     },
-    { 
-      manual: true
+    {
+      manual: true,
     }
   );
+
+  useEffect(() => {
+    if (borrowReturnError) {
+      openSnackBar('error', borrowReturnError.message);
+    }
+  }, [borrowReturnError]);
     
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = copies.map((copy) => { 
-      return {
-        ... copy,
-        document: doc?.document
-      };
-    });
-    await insertCopies({ data: {copies: data} });
+    const data : BorrowReturn = {
+      copy: { ... selectedCopy },
+      borrowDate: new Date().toISOString()
+    };
+    await createOrUpdateBorrowReturn({data: data});
     fetchDocument?.();
     setTimeout(setOpen, 2000);
   };
@@ -80,7 +96,23 @@ const AddCopy = ({ existingDocument, documents, operation, fetchDocument, setOpe
             }}
             renderInput={(params) => <TextField {...params} label="Search Document" />} />
         </Grid>
-        {copies.map((copy: Copy, index: number) => {
+        <Grid item xs={12}>
+          <Autocomplete 
+            options={copies}
+            value={selectedCopy}
+            onChange={(event, value: Copy | null, reason) => {
+              if(value) {
+                setSelectedCopy(value);
+              }
+            }}
+            getOptionLabel={(option: Copy) => {
+              const optionLabel = 'Copy ID: ' + option?.id + ' Room Number: ' + option?.roomNumber + 
+              ' Level: ' + option?.level + ', Document ID: ' + option?.document?.id;
+              return optionLabel;
+            }}
+            renderInput={(params) => <TextField {...params} label="Select Copy" />} />
+        </Grid>
+        {/* {copies.map((copy: Copy, index: number) => {
           return (
             <>
               <Grid item xs={6} sm={6}>
@@ -137,8 +169,8 @@ const AddCopy = ({ existingDocument, documents, operation, fetchDocument, setOpe
               </Grid>
             </>
           );
-        })}
-        <Grid
+        })} */}
+        {/* <Grid
           container
           direction={'row'}
           justifyContent={'center'}
@@ -162,7 +194,19 @@ const AddCopy = ({ existingDocument, documents, operation, fetchDocument, setOpe
           >
             Add Copy
           </Button>
-        </Grid>
+          <Button
+            variant="contained"
+            sx={{ mt: 3, mb: 2, mr: 2 }}
+            // disabled={loading}
+            onClick={() => {
+              setCopies((oCopies) => {
+                return oCopies.splice(0, oCopies.length - 1);
+              });
+            }}
+          >
+            Remove Author
+          </Button>
+        </Grid> */}
         <Grid container 
           direction="row"
           justifyContent="center"
@@ -182,4 +226,4 @@ const AddCopy = ({ existingDocument, documents, operation, fetchDocument, setOpe
   );
 };
 
-export default AddCopy;
+export default AddBorrow;
