@@ -21,7 +21,7 @@ const UserComponent = () => {
   const [userType, setUserType] = useState<User['userType']>('LIBRARIAN');
   const userTypes: User['userType'][] = ['LIBRARIAN', 'MEMBER'];
   const columns: string[] = ['id', 'firstName', 'lastName',
-    'phoneNumber', 'dob', 'age', 'address1', 'address2',
+    'phoneNumber', 'dobString', 'age', 'address1', 'address2',
     'city', 'state', 'zipCode', 'username'];
   const [users, setUsers] = useState<User[]>([]);
   const [librarians, setLibrarians] = useState<Librarian[]>([]);

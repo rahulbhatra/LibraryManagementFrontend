@@ -8,13 +8,27 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TokenService from '../services/token.service';
+import UserContext from '../../context/UserContext';
 
 const MainListItems = () => {
 
-  const isMember = TokenService.isMember();
-  const isLibrarian = TokenService.isLibrarian();
+  const { token } = useContext(UserContext);
+  const [isMember, setIsMember] = useState<Boolean>(false);
+  const [isLibrarian, setIsLibrarian] = useState<Boolean>(false);
+
+  useEffect(() => {
+    if (token) {
+      if (TokenService.isLibrarian()) {
+        setIsLibrarian(true);
+        setIsMember(false);
+      } else {
+        setIsMember(true);
+        setIsLibrarian(false);
+      }
+    }
+  }, [token]);
 
   return (
     <React.Fragment>

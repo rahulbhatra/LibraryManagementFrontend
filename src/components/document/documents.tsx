@@ -29,8 +29,6 @@ const Documents = () => {
     fetchDocuments(type, authorTerm, searchTerm);
   }, []);
 
-  
-
   // useEffect(() => {
   //   if (librarians) {
   //     const documents = librarians.map((librarian: Librarian) => {

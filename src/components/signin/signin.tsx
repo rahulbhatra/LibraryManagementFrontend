@@ -17,13 +17,14 @@ import { useNavigate } from 'react-router-dom';
 import { BearerAccessRefreshToken } from '../../models/authentication';
 import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
 import TokenService from '../services/token.service';
-import useTokenService from '../services/token.service';
+import UserContext from '../../context/UserContext';
 
 const SignIn = () => {
   const navigate = useNavigate();
   const { open, severity, message, openSnackBar } = useSnackBar();
+  const { token, setToken} = React.useContext(UserContext);
 
-  const [{ data: token, loading: tokenLoading, error: tokenError }, verifyUser] = useAxios(
+  const [{ data: tokenData, loading: tokenLoading, error: tokenError }, verifyUser] = useAxios(
     {
       method: 'POST',
       url: 'http://localhost:8080/login'
@@ -49,20 +50,21 @@ const SignIn = () => {
   }, [tokenError]);
 
   useEffect(() => {
-    if (token) {
-      const loggedInToken: BearerAccessRefreshToken = token;
+    if (tokenData) {
+      const loggedInToken: BearerAccessRefreshToken = tokenData;
       openSnackBar('success', 'Signed In Success');
       localStorage.setItem('BearerAccessRefreshToken', JSON.stringify(loggedInToken));
       TokenService.setBearerAccessRefreshToken(loggedInToken);
+      setToken?.(tokenData);
       console.log(loggedInToken);
       setTimeout(() => {
         navigate('/dashboard');
       }, 3000);
     }
-    if (token === false) {
+    if (tokenData === false) {
       TokenService.removeBearerAccessRefreshToken();
     }
-  }, [token]);
+  }, [tokenData]);
 
   return (
     <Container component="main" maxWidth="xs">

@@ -5,19 +5,19 @@ const getLocalRefreshToken = (): string => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
   const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
   // console.log(bearerAccessRefreshToken);
-  return bearerAccessRefreshToken?.refresh_token;
+  return bearerAccessRefreshToken?.refresh_token || '';
 };
   
 const getLocalAccessToken = (): string => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
   const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
-  return bearerAccessRefreshToken?.access_token;
+  return bearerAccessRefreshToken?.access_token || '';
 };
   
 const getLocalRoles = (): string[] => {
   const bartStorage = localStorage.getItem('BearerAccessRefreshToken');
   const bearerAccessRefreshToken: BearerAccessRefreshToken = bartStorage ? JSON.parse(bartStorage) : null;
-  return bearerAccessRefreshToken?.roles;
+  return bearerAccessRefreshToken?.roles || [];
 };
   
 const isMember = (): boolean => {

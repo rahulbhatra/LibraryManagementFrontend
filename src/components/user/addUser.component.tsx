@@ -1,10 +1,12 @@
 import { Autocomplete, Box, Button, Grid, TextField } from '@mui/material';
+import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import useAxios, { RefetchFunction } from 'axios-hooks';
 import { useEffect, useState } from 'react';
 import { Librarian, Member } from '../../models/librarian';
 import { User } from '../../models/user';
 import TokenService from '../services/token.service';
 import useSnackBar, { CustomSnackBar } from '../snackbar/snackbar';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Operation } from './user.component';
 
 interface AddProps {
@@ -26,8 +28,6 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
   const [librarian, setLibrarian] = useState<Librarian | null>( null);
   const [member, setMember] = useState<Member>({});
 
-  console.log(librarians);
-
   useEffect(() => {
     if (librarian?.user) {
       setUser(librarian?.user);
@@ -46,21 +46,21 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
     };
     if (operation === 'Add') {
       await post?.({ data });
-      openSnackBar('success', `Successfully created ${user.userType}`);
+      openSnackBar('success', `Successfully created ${userType}`);
     } else if (operation === 'Edit') {
       await put?.({ data });
-      openSnackBar('success', `Successfully updated ${user.userType}`);
+      openSnackBar('success', `Successfully updated ${userType}`);
     } else {
       await remove?.({ data });
-      openSnackBar('success', `Successfully updated ${user.userType}`);
+      openSnackBar('success', `Successfully deleted ${userType}`);
     }
     getAll?.();
     setTimeout(setOpen, 2000);
   };
 
   useEffect(() => {
-    console.log(user);
-  }, [user]);
+    
+  }, []);
 
   return (
     <Box component="form" onSubmit={handleAdd} sx={{ mt: 1 }}>
@@ -117,7 +117,7 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
                     };
                   });
                 }}
-                label="First Name"
+                placeholder="First Name"
                 autoComplete="firstName"
                 autoFocus
               />
@@ -126,7 +126,7 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
               <TextField
                 fullWidth
                 id="middleName"
-                label="Middle Name"
+                placeholder="Middle Name"
                 name="middleName"
                 autoComplete="family-name"
                 value={user.middleName}
@@ -145,9 +145,8 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
                 required
                 fullWidth
                 id="lastName"
-                label="Last Name"
+                placeholder="Last Name"
                 name="lastName"
-                autoComplete="family-name"
                 value={user.lastName}
                 onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
                   setUser((oldUser) => {
@@ -243,26 +242,22 @@ export const AddUser = ({ userType, librarians, members, getAll, operation, post
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="dob"
-                label="date of birth"
-                id="dob"
-                autoComplete="date of birth"
-                type="date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-                  setUser((oldUser) => {
-                    return {
-                      ...oldUser,
-                      dob: new Date(event.target.value).toISOString()
-                    };
-                  });
-                }}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="date of birth"
+                  value={user?.dobString ? new Date(user.dobString) : new Date()}
+                  onChange={(value) => {
+                    setUser((oldUser) => {
+                      return {
+                        ...oldUser,
+                        dob: value?.toISOString(),
+                        dobString: value?.toISOString()
+                      };
+                    });
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
             </Grid>
             {operation === 'Add' && userType === 'MEMBER' && librarians && (
               <Grid item xs={12}>

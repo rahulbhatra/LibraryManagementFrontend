@@ -91,17 +91,17 @@ const AddDocument = ({ existingDocument, documents, operation, fetchDocument, se
       await postBook({
         data
       });
-      openSnackBar('success', `Successfully created ${doc?.document?.documentType}`);
+      openSnackBar('success', `Successfully created ${type}`);
     } else if (operation === 'Edit') {
       await putBook({
         data
       });
-      openSnackBar('success', `Successfully updated ${doc?.document?.documentType}`);
+      openSnackBar('success', `Successfully updated ${type}`);
     } else {
       await deleteDoc({
         data: { id: doc?.document?.id}
       });
-      openSnackBar('success', `Successfully deleted ${doc?.document?.documentType}`);
+      openSnackBar('success', `Successfully deleted ${type}`);
     }
     fetchDocument?.();
     setTimeout(setOpen, 2000);
@@ -180,6 +180,7 @@ const AddDocument = ({ existingDocument, documents, operation, fetchDocument, se
                   <TextField
                     required
                     fullWidth
+                    type={'number'}
                     id="edition"
                     value={doc?.edition}
                     onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -196,6 +197,7 @@ const AddDocument = ({ existingDocument, documents, operation, fetchDocument, se
                 </Grid><Grid item xs={12}>
                   <TextField
                     fullWidth
+                    type={'number'}
                     id="year"
                     value={doc?.year}
                     onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

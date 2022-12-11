@@ -8,7 +8,7 @@ const useFetchDocuments = () => {
       url: 'http://localhost:8080/document/getAll',
       method: 'POST',
       headers: {
-        'Authorization': TokenService.getLocalAccessToken()
+        'Authorization': 'Bearer ' + TokenService.getLocalAccessToken()
       }
     },
     {

@@ -5,6 +5,7 @@ export type User = {
   lastName?: string;
   phoneNumber?: string;
   dob?: string;
+  dobString?: string;
   age?: number;
   address1?: string;
   address2?: string;
